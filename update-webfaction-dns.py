@@ -32,6 +32,7 @@ import urllib2
 help_message = '''
 \033[1;32mupdate-webfaction-dns.py \033[0;33m[options] \033[0;34musername:password[@machine] \033[0;35mdomain[@ip-adress] [, domain ...] ...\033[0m updates your DNS override records at Webfaction.
 
+* connects to Webfaction using SSL [https://api.webfaction.com/]
 * \033[0;34mmachine\033[0m is case-sensitive, so Web100 is Web100 and not web100.
 * \033[0;35mip-address\033[0m is optional. If omitted your current external IP will be fetched.
 
