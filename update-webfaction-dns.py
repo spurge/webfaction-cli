@@ -128,7 +128,7 @@ def main( argv = None ):
 
 	except Usage, err:
 		print >> sys.stderr, str( err.msg )
-		print >> sys.stderr, "For help use --help"
+		print >> sys.stdout, "For help use --help"
 		return 2
 
 if __name__ == "__main__":
