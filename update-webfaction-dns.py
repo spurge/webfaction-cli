@@ -6,7 +6,7 @@ update-webfaction-dns.py
 This script will update your Webfaction DNS override records with
 specified ip-adresses or your dynamic external ip.
 
-Created by spurge on 2012-03-25.
+Created by spurge on 2012-09-27.
 Copyright (c) 2012 Klandestino AB. All rights reserved.
 
 This program is free software; you can redistribute it and/or
