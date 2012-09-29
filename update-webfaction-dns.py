@@ -28,6 +28,7 @@ import getopt
 import re
 import xmlrpclib
 import urllib2
+from datetime import datetime
 
 help_message = '''
 \033[1;32mupdate-webfaction-dns.py \033[0;33m[options] \033[0;34musername:password[@machine] \033[0;35mdomain[@ip-adress] [, domain ...] ...\033[0m updates your DNS override records at Webfaction.
@@ -73,6 +74,8 @@ def main( argv = None ):
 			args = args[ 1: ]
 			if verbose:
 				print >> sys.stdout, 'Using login: {0}:[password]@{1}'.format( login.group( 1 ), login.group( 3 ) )
+		except IndexError, msg:
+			raise Usage( 'Username and password are not specified correctly' )
 		except AttributeError, msg:
 			raise Usage( 'Username and password are not specified correctly' )
 
@@ -127,7 +130,7 @@ def main( argv = None ):
 				print >> sys.stdout, 'Updated domain: {0} with IP: {1}'.format( domain.group( 1 ), ip )
 
 	except Usage, err:
-		print >> sys.stderr, str( err.msg )
+		print >> sys.stderr, '{0} :: error :: {1}'.format( datetime.now().strftime( '%Y-%m-%d %H:%M:%S' ), str( err.msg ) )
 		print >> sys.stdout, "For help use --help"
 		return 2
 
