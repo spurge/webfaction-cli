@@ -41,6 +41,11 @@ Available actions are:
   \033[1;35mcreate_dns_override\033[0;33m domain[@ip-address]\033[0m
     * Creates a DNS override. The domain must be created first.
     * \033[0;33mip-address\033[0m is optional. If omitted your current external IP will be fetched.
+  \033[1;35mdelete_dns_override\033[0;33m domain[@ip-address]\033[0m
+    * Deletes a DNS override.
+  \033[1;35mlist_dns_overrides\033[0m
+    * Prints a list with all dns overrides.
+    * Pattern: { 'key': 'value' }
 
 Available options are:
 
@@ -127,6 +132,14 @@ class Webfaction:
 
 		return domains
 
+	def list_dns_overrides( self ):
+		try:
+			domains = self.server.list_dns_overrides( self.session_id )
+		except xmlrpc.Fault, err:
+			raise WError( err, 'Could not get a list of dns overrides' )
+
+		return domains
+
 def main( argv = None ):
 	if argv is None:
 		argv = sys.argv
@@ -163,10 +176,19 @@ def main( argv = None ):
 		if not len( args ):
 			raise Usage( 'No actions specified' )
 
+		available_actions = [
+			'create_dns_override',
+			'delete_dns_override',
+			'list_dns_overrides'
+		]
+
 		current_action = ''
 		for action in args:
-			if action == 'create_dns_override' or action == 'delete_dns_override':
+			if action in available_actions:
 				current_action = action
+
+				if current_action == 'list_dns_overrides':
+					print >> sys.stdout, "\n".join( map( str, wf.list_dns_overrides() ) )
 			elif current_action == 'create_dns_override':
 				try:
 					domain = re.match( '^([^$@]+)(?:@([^$]+))?$', action )
