@@ -116,6 +116,17 @@ class Webfaction:
 
 		return domain, ip
 
+	def delete_dns_override( self, domain, ip = None ):
+		try:
+			if ip:
+				domains = self.server.delete_dns_override( self.session_id, domain, ip )
+			else:
+				domains = self.server.delete_dns_override( self.session_id, domain )
+		except xmlrpclib.Fault, err:
+			raise WError( err, 'Could not delete a dns override' )
+
+		return domains
+
 def main( argv = None ):
 	if argv is None:
 		argv = sys.argv
@@ -154,13 +165,20 @@ def main( argv = None ):
 
 		current_action = ''
 		for action in args:
-			if action == 'create_dns_override':
+			if action == 'create_dns_override' or action == 'delete_dns_override':
 				current_action = action
 			elif current_action == 'create_dns_override':
 				try:
 					domain = re.match( '^([^$@]+)(?:@([^$]+))?$', action )
 					domain, ip = wf.create_dns_override( domain.group( 1 ), domain.group( 2 ) )
 					log.say( 'Created dns override for domain: {0} with ip: {1}'.format( domain, ip ) )
+				except AttributeError, msg:
+					raise Usage( 'Domain not specified correctly: domain[@ip]' )
+			elif current_action == 'delete_dns_override':
+				try:
+					domain = re.match( '^([^$@]+)(?:@([^$]+))?$', action )
+					domains = wf.delete_dns_override( domain.group( 1 ), domain.group( 2 ) )
+					log.say( 'Deleted dns override for {0} domains'.format( len( domains ) ) )
 				except AttributeError, msg:
 					raise Usage( 'Domain not specified correctly: domain[@ip]' )
 			else:
