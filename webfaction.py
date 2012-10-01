@@ -46,6 +46,9 @@ Available actions are:
   \033[1;35mlist_dns_overrides\033[0m
     * Prints a list with all dns overrides.
     * Pattern: { 'key': 'value' }
+  \033[1;35mupdate_dns_override\033[0;33m domain[@ip-address]\033[0m
+    * Creates/updates a DNS override. The domain must be created first.
+    * \033[0;33mip-address\033[0m is optional. If omitted your current external IP will be fetched.
 
 Available options are:
 
@@ -140,6 +143,19 @@ class Webfaction:
 
 		return domains
 
+	def update_dns_override( self, domain, ip = None ):
+		domains = self.list_dns_overrides();
+		
+		for override in domains:
+			if override[ 'domain' ] == domain:
+				if override[ 'a_ip' ] != ip:
+					self.delete_dns_override( domain, override[ 'a_ip' ] )
+					return self.create_dns_override( domain, ip )
+
+				return domain, ip
+
+		return self.create_dns_override( domain, ip )
+
 def main( argv = None ):
 	if argv is None:
 		argv = sys.argv
@@ -179,7 +195,8 @@ def main( argv = None ):
 		available_actions = [
 			'create_dns_override',
 			'delete_dns_override',
-			'list_dns_overrides'
+			'list_dns_overrides',
+			'update_dns_override'
 		]
 
 		current_action = ''
@@ -201,6 +218,13 @@ def main( argv = None ):
 					domain = re.match( '^([^$@]+)(?:@([^$]+))?$', action )
 					domains = wf.delete_dns_override( domain.group( 1 ), domain.group( 2 ) )
 					log.say( 'Deleted dns override for {0} domains'.format( len( domains ) ) )
+				except AttributeError, msg:
+					raise Usage( 'Domain not specified correctly: domain[@ip]' )
+			elif current_action == 'update_dns_override':
+				try:
+					domain = re.match( '^([^$@]+)(?:@([^$]+))?$', action )
+					domain, ip = wf.update_dns_override( domain.group( 1 ), domain.group( 2 ) )
+					log.say( 'Updated dns override for domain: {0} with up: {1}'.format( domain, ip ) )
 				except AttributeError, msg:
 					raise Usage( 'Domain not specified correctly: domain[@ip]' )
 			else:

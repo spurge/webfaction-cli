@@ -10,17 +10,19 @@ Available actions are:
 ----------------------
 
 ### **create_dns_override** _domain[@ip-address]_
-
 * Creates a DNS override. The domain must be created first.
 * ip-address is optional. If omitted your current external IP will be fetched.
 
 ### **delete_dns_override** _domain[@ip-address]_
-
 * Deletes a DNS override.
 
 ### **list_dns_overrides**
 * Prints a list with all dns overrides.
 * Pattern: { 'key': 'value' }
+
+### **update_dns_override** _domain[@ip-address]_
+* Creates/updates a DNS override. The domain must be created first.
+* ip-address is optional. If omitted your current external IP will be fetched.
 
 Available options are:
 ----------------------
