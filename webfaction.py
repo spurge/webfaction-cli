@@ -28,6 +28,7 @@ import getopt
 import re
 import xmlrpclib
 import urllib2
+import socket
 from datetime import datetime
 
 help_message = '''
@@ -73,7 +74,7 @@ class Log():
 				datetime.now().strftime( '%Y-%m-%d %H:%M:%S' ),
 				message
 			)
-	
+
 	def err( self, message ):
 		print >> sys.stderr, '{0} :: error :: {1}'.format(
 			datetime.now().strftime( '%Y-%m-%d %H:%M:%S' ),
@@ -111,13 +112,18 @@ class Webfaction:
 				self.session_id, self.account = self.server.login( username, password )
 		except xmlrpclib.Fault, err:
 			raise WError( err, 'Could not login' )
-	
+
 	def create_dns_override( self, domain, ip = None ):
 		if ip == None:
 			ip = self.get_external_ip()
 
+                existing = socket.gethostbyname( domain )
+
+                if ip == existing:
+                    return domain, ip
+
 		domains = self.list_dns_overrides();
-		
+
 		for override in domains:
 			if override[ 'domain' ] == domain:
 				if override[ 'a_ip' ] != ip:
